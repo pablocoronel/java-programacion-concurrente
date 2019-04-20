@@ -2,3 +2,6 @@ Videos:
 
 Package uso_threads:
 168: Threads I. Programación de hilos => Uso_Threads.java
+
+Package uso_threads_2:
+169: Threads II Interrupción de hilos => Uso_Threads_2.java
