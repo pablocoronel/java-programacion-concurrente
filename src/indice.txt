@@ -5,3 +5,6 @@ Package uso_threads:
 
 Package uso_threads_2:
 169: Threads II Interrupción de hilos => Uso_Threads_2.java
+
+Package uso_threads_3:
+170: Treads III. Interrupción de varios hilos => Uso_Threads_3.java
