@@ -8,3 +8,6 @@ Package uso_threads_2:
 
 Package uso_threads_3:
 170: Treads III. Interrupción de varios hilos => Uso_Threads_3.java
+
+Package sincronizacion:
+171: Threads IV. Sincronización de Threads I => Sincronizando_Hilos.java
