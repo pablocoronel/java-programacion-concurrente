@@ -76,6 +76,9 @@ class Banco {
 			// forma estar en condiciones de despertar el hilo en espera
 			while (this.cuentas[cuenta_origen] < cantidad) {
 				this.saldo_suficiente.await();
+				System.err.println(
+						"HILO " + Thread.currentThread().getName() + " a la espera, en la cuenta " + cuenta_origen
+								+ " con saldo actual: " + cuentas[cuenta_origen] + ", queriendo enviar: " + cantidad);
 			}
 
 			System.out.println(Thread.currentThread());
