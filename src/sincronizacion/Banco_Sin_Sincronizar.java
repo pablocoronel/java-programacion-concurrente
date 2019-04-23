@@ -28,9 +28,13 @@ public class Banco_Sin_Sincronizar {
 class Banco {
 	// cuentas bancarias
 	private final double[] cuentas;
+
 	// instancia para bloquear y desbloquear codigo
 	// el tipo es la interface, para que sea solamente los metodos de la interface
 	private Lock cierre_banco = new ReentrantLock();
+
+	// condicion para la espera y liberacion de un hilo
+	private Condition saldo_suficiente;
 
 	public Banco() {
 		// se inicializan las 100 cuentas en cero (0.0), cada posicion del array es la
@@ -41,27 +45,37 @@ class Banco {
 			// se le asigna $2000 iniciales
 			this.cuentas[i] = 2000;
 		}
+
+		// asignacion de la condicion
+		this.saldo_suficiente = cierre_banco.newCondition();
 	}
 
 	// transferencias bancarias
 	// dentro de este método, los hilos al ejecutarse en simultaneo, se van
 	// "pisando" los datos y ocaciona distintas cantidades de dinero total, ya que
 	// no se ejecutan de forma ordenada, uno tras otro
-	public void transferencia(int cuenta_origen, int cuenta_destino, double cantidad) {
+	public void transferencia(int cuenta_origen, int cuenta_destino, double cantidad) throws InterruptedException {
 		// bloquea el codigo que está adentro del try
 		cierre_banco.lock();
 
 		try {
 
 			// evitar transferencias mayores a la posible
-			if (this.cuentas[cuenta_origen] < cantidad) {
-				System.out.println("--------------CANTIDAD INSUFICIENTE en cuenta: " + cuenta_origen
-						+ ".........SALDO: " + cuentas[cuenta_origen] + " ......... INTENTO TRANSFERIR: " + cantidad);
+//			if (this.cuentas[cuenta_origen] < cantidad) {
+//				System.out.println("--------------CANTIDAD INSUFICIENTE en cuenta: " + cuenta_origen
+//						+ ".........SALDO: " + cuentas[cuenta_origen] + " ......... INTENTO TRANSFERIR: " + cantidad);
+//
+//				// sale del método, vuelve el flujo de ejecucion ala llamada del método
+//				return;
+//			} else {
+//				System.out.println("-----------CANTIDAD OK---------- en cuenta: " + cuenta_origen);
+//			}
 
-				// sale del método, vuelve el flujo de ejecucion ala llamada del método
-				return;
-			} else {
-				System.out.println("-----------CANTIDAD OK---------- en cuenta: " + cuenta_origen);
+			// evitar transferencias mayores a la posible
+			// con while para consultar si ya tiene disponible saldo suficiente y de esa
+			// forma estar en condiciones de despertar el hilo en espera
+			while (this.cuentas[cuenta_origen] < cantidad) {
+				this.saldo_suficiente.await();
 			}
 
 			System.out.println(Thread.currentThread());
@@ -75,6 +89,10 @@ class Banco {
 			this.cuentas[cuenta_destino] += cantidad;
 
 			System.out.printf("Saldo total: $%10.2f \n", this.getSaldoTotal());
+
+			// avisa a los hilos en espera que pueden volver a evaluar si despertar o seguir
+			// esperando
+			saldo_suficiente.signalAll();
 		} finally {
 			// desbloquea el codigo para el siguiente hilo, exista una excepcion o no, se
 			// ejecuta igual
