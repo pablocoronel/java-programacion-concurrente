@@ -55,8 +55,13 @@ class Banco {
 
 			// evitar transferencias mayores a la posible
 			if (this.cuentas[cuenta_origen] < cantidad) {
-				// sale
+				System.out.println("--------------CANTIDAD INSUFICIENTE en cuenta: " + cuenta_origen
+						+ ".........SALDO: " + cuentas[cuenta_origen] + " ......... INTENTO TRANSFERIR: " + cantidad);
+
+				// sale del método, vuelve el flujo de ejecucion ala llamada del método
 				return;
+			} else {
+				System.out.println("-----------CANTIDAD OK---------- en cuenta: " + cuenta_origen);
 			}
 
 			System.out.println(Thread.currentThread());
